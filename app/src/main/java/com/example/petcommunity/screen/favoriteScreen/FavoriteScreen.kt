@@ -1,5 +1,6 @@
 package com.example.petcommunity.screen.favoriteScreen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.FabPosition
@@ -13,6 +14,8 @@ import com.example.petcommunity.FloatingActionButtonScaffold
 
 @Composable
 fun FavoriteScreen(navController: NavController) {
+    Log.d("XXX","FavoriteScreen")
+
     Scaffold(floatingActionButton = {
         FloatingActionButtonScaffold()
     },

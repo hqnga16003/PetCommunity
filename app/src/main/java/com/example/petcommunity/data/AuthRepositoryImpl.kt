@@ -1,7 +1,5 @@
 package com.example.petcommunity.data
 
-import android.util.Log
-import com.example.petcommunity.screen.authScreen.LoginState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.tasks.await
@@ -12,20 +10,24 @@ class AuthRepositoryImpl @Inject constructor(private val firebaseAuth: FirebaseA
     override val currenUser: FirebaseUser?
         get() = firebaseAuth.currentUser
 
-    override suspend fun login(email: String, password: String) {
-        try {
-             firebaseAuth.signInWithEmailAndPassword(email, password).await()
+    override suspend fun login(email: String, password: String): FirebaseUser? {
+        return try {
+            firebaseAuth.signInWithEmailAndPassword(email, password).await()
+            firebaseAuth.currentUser
         } catch (e: Exception) {
             e.printStackTrace()
+            null
         }
-
     }
 
-    override suspend fun signUp(email: String, password: String) {
-        try {
-            firebaseAuth.createUserWithEmailAndPassword(email, password).await()
+
+    override suspend fun signUp(email: String, password: String): FirebaseUser? {
+        return try {
+            firebaseAuth.createUserWithEmailAndPassword(email,password)
+            firebaseAuth.currentUser
         } catch (e: Exception) {
             e.printStackTrace()
+            null
         }
     }
 
