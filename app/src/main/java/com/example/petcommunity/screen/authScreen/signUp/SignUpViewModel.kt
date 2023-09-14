@@ -1,5 +1,6 @@
 package com.example.petcommunity.screen.authScreen.signUp
 
+import android.util.Log
 import android.util.Patterns
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -8,7 +9,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.petcommunity.data.AuthRepository
+import com.example.petcommunity.screen.authScreen.LoginState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,64 +20,60 @@ interface SignUpFormState {
     var email: String
     var password: String
     var conformPassword: String
+    var emailValidation: Boolean
+    var passwordValidation: Boolean
+    var conformPasswordValidation: Boolean
 
 }
 
-class MutableSignUpFormState : SignUpFormState {
-    override var email: String by mutableStateOf("")
-    override var password: String by mutableStateOf("")
-    override var conformPassword: String by mutableStateOf("")
-
+class MutableSignUpFormState() : SignUpFormState {
+    override var email: String by mutableStateOf("hqng1604@gmail.com")
+    override var password: String by mutableStateOf("123456")
+    override var conformPassword: String by mutableStateOf("123456")
+    override var emailValidation: Boolean by mutableStateOf(false)
+    override var passwordValidation: Boolean by mutableStateOf(false)
+    override var conformPasswordValidation: Boolean by mutableStateOf(false)
 }
 
 data class ValidationResult(val successful: Boolean, val errorMessage: String? = null)
+
 @HiltViewModel
-class SignUpViewModel @Inject constructor(private val repository: AuthRepository)  : ViewModel() {
+class SignUpViewModel @Inject constructor(private val repository: AuthRepository) : ViewModel() {
     private var _uiStateSignUp = MutableSignUpFormState()
     val uiStateSignUp: SignUpFormState get() = _uiStateSignUp
 
-    fun validateEmail(email: String): ValidationResult {
-        if (email.isBlank()) {
-            return ValidationResult(successful = false, errorMessage = "The email can't be blank")
-        }
-        if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            return ValidationResult(successful = false, errorMessage = "That's not a valid email")
 
+    fun validateEmail(email: String): Boolean {
+
+        return if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            _uiStateSignUp.emailValidation = true
+            true
+        } else{
+            _uiStateSignUp.emailValidation = false
+            false
         }
-        return ValidationResult(successful = true, errorMessage = "That's not a valid email")
 
     }
-
-    fun validatePassword(password: String): ValidationResult {
+    fun validatePassword(password: String): Boolean {
         if (password.length < 6) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = "The password needs to consist of at least 6 characters"
-            )
+            _uiStateSignUp.passwordValidation = false
+            return false
         }
-
-        return ValidationResult(successful = true, errorMessage = "That's not a valid email")
+        _uiStateSignUp.passwordValidation = true
+        return true
     }
-
-    fun validateRepeatedPassword(password: String, repeatedPassword: String): ValidationResult {
+    fun validateRepeatedPassword(password: String, repeatedPassword: String): Boolean {
         if (password != repeatedPassword) {
-            return ValidationResult(
-                successful = false,
-                errorMessage = "The passwords don't match"
-            )
+            _uiStateSignUp.conformPasswordValidation = false
+            return false
         }
-        return ValidationResult(successful = true)
-
+        _uiStateSignUp.conformPasswordValidation = true
+        return true
     }
 
     fun signUp(email: String, password: String) = viewModelScope.launch {
         repository.signUp(email, password)
     }
 
-
-
-    sealed class ValidationEvent {
-        object Success : ValidationEvent()
-    }
 
 }

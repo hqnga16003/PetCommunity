@@ -78,14 +78,15 @@ fun TextAuth(titleFirst:String,titlesecond:String,onClick: () -> Unit) {
 }
 
 @Composable
-fun ButtonAuth(title: String, onClick: () -> Unit) {
+fun ButtonAuth(title: String,enabled:Boolean, onClick: () -> Unit) {
     Button(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
             containerColor = GreenText,
             contentColor = Color.White
-        )
+        ),
+        enabled = enabled
     ) {
         Text(text = title, style = MaterialTheme.typography.titleMedium)
     }

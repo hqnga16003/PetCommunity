@@ -105,7 +105,6 @@ fun LoginScreen(viewModel: LoginScreenViewModel, navController: NavHostControlle
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
             })
-            Log.d("XXX", " LoginState.Loading")
         }
 
 
@@ -155,7 +154,7 @@ fun BodyUILoginScreen(
             // event
         }
         Spacer(modifier = Modifier.height(30.dp))
-        ButtonAuth("Sign In", onClick = onClickSignIn)
+        ButtonAuth("Sign In", true,onClick = onClickSignIn)
 
         Spacer(modifier = Modifier.height(10.dp))
         TextAuth("Don't have an account?", "Sign Up", onClick = onClickSignUp)

@@ -1,6 +1,7 @@
 package com.example.petcommunity.screen.authScreen.signUp
 
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.BottomSheetState
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -38,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.petcommunity.BottomBarScreen
 import com.example.petcommunity.screen.authScreen.ButtonAuth
 import com.example.petcommunity.screen.authScreen.ButtonLoginOther
 import com.example.petcommunity.screen.authScreen.DividerUILogin
@@ -65,143 +68,23 @@ fun SignUpScreen(navController: NavHostController) {
             .wrapContentSize())
 
 
-        BodyUIRegisterScreen(
-            modifier = Modifier.constrainAs(refBody) {
-                top.linkTo(parent.top)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                bottom.linkTo(parent.bottom)
+        BodyUIRegisterScreen(modifier = Modifier.constrainAs(refBody) {
+            top.linkTo(parent.top)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+            bottom.linkTo(parent.bottom)
 
-            },
-            viewModel = viewModel,
-            onClickSignIn = {
-                            navController.navigate("login")
-            },
-            onClickSignUp = { })
+        }, viewModel = viewModel, onClickSignIn = {
+            navController.navigate("login")
+        }, onClickSignUp = {
+            viewModel.signUp(viewModel.uiStateSignUp.email, viewModel.uiStateSignUp.password)
+                .invokeOnCompletion {
+                    navController.navigate(BottomBarScreen.Home.route)
+                }
+        })
 
     }
-//    val signUpViewModel: SignUpViewModel = hiltViewModel()
-//    val state = signUpViewModel.uiStateSignUp
-//    val context = LocalContext.current
-//    LaunchedEffect(key1 = context) {
-//        signUpViewModel.validationEvents.collect { event ->
-//            when (event) {
-//                is SignUpViewModel.ValidationEvent.Success -> {
-//                    Toast.makeText(
-//                        context,
-//                        "Registration successful",
-//                        Toast.LENGTH_LONG
-//                    ).show()
-//                }
-//            }
-//        }
-//    }
-//    Column(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .padding(32.dp),
-//        verticalArrangement = Arrangement.Center
-//    ) {
-//        TextField(
-//            value = state.email,
-//            onValueChange = {
-//                signUpViewModel.onEvent(SignUpFormEvent.EmailChanged(it))
-//            },
-//            isError = state.emailError != null,
-//            modifier = Modifier.fillMaxWidth(),
-//            placeholder = {
-//                androidx.compose.material.Text(text = "Email")
-//            },
-//            keyboardOptions = KeyboardOptions(
-//                keyboardType = KeyboardType.Email
-//            )
-//        )
-//        if (state.emailError != null) {
-//            Text(
-//                text = state.emailError.toString(),
-//                color = androidx.compose.material.MaterialTheme.colors.error,
-//                modifier = Modifier.align(Alignment.End)
-//            )
-//        }
-//        Spacer(modifier = Modifier.height(16.dp))
-//        TextField(
-//            value = state.password,
-//            onValueChange = {
-//                signUpViewModel.onEvent(SignUpFormEvent.PasswordChanged(it))
-//            },
-//            isError = state.passwordError != null,
-//            modifier = Modifier.fillMaxWidth(),
-//            placeholder = {
-//                androidx.compose.material.Text(text = "Password")
-//            },
-//            keyboardOptions = KeyboardOptions(
-//                keyboardType = KeyboardType.Password
-//            ),
-//            visualTransformation = PasswordVisualTransformation()
-//        )
-//        if (state.passwordError != null) {
-//            Text(
-//                text = state.passwordError.toString(),
-//                color = androidx.compose.material.MaterialTheme.colors.error,
-//                modifier = Modifier.align(Alignment.End)
-//            )
-//        }
-//        Spacer(modifier = Modifier.height(16.dp))
-//
-//        TextField(
-//            value = state.repeatedPassword,
-//            onValueChange = {
-//                signUpViewModel.onEvent(SignUpFormEvent.RepeatedPasswordChanged(it))
-//            },
-//            isError = state.repeatedPasswordError != null,
-//            modifier = Modifier.fillMaxWidth(),
-//            placeholder = {
-//                androidx.compose.material.Text(text = "Repeat password")
-//            },
-//            keyboardOptions = KeyboardOptions(
-//                keyboardType = KeyboardType.Password
-//            ),
-//            visualTransformation = PasswordVisualTransformation()
-//        )
-//        if (state.repeatedPasswordError != null) {
-//            Text(
-//                text = state.repeatedPasswordError.toString(),
-//                color = androidx.compose.material.MaterialTheme.colors.error,
-//                modifier = Modifier.align(Alignment.End)
-//            )
-//        }
-//        Spacer(modifier = Modifier.height(16.dp))
-//
-//        Row(
-//            modifier = Modifier.fillMaxWidth()
-//        ) {
-//            Checkbox(
-//                checked = state.acceptedTerms,
-//                onCheckedChange = {
-//                    signUpViewModel.onEvent(SignUpFormEvent.AcceptTerms(it))
-//                }
-//            )
-//            Spacer(modifier = Modifier.width(8.dp))
-//            androidx.compose.material.Text(text = "Accept terms")
-//        }
-//        if (state.termsError != null) {
-//            Text(
-//                text = state.termsError.toString(),
-//                color = androidx.compose.material.MaterialTheme.colors.error,
-//            )
-//        }
-//
-//        Button(
-//            onClick = {
-//                signUpViewModel.onEvent(SignUpFormEvent.Submit)
-//            },
-//            modifier = Modifier.align(Alignment.End)
-//        ) {
-//            androidx.compose.material.Text(text = "Submit")
-//        }
-//
-//
-//    }
+
 }
 
 
@@ -230,7 +113,7 @@ private fun BodyUIRegisterScreen(
         TextFieldSignUp(
             "Email Address",
             viewModel.uiStateSignUp.email,
-            isError = viewModel.validateEmail(viewModel.uiStateSignUp.email).successful,
+            isError = !viewModel.validateEmail(viewModel.uiStateSignUp.email),
             KeyboardType.Email,
             localFocusManager
         ) { email ->
@@ -240,7 +123,7 @@ private fun BodyUIRegisterScreen(
         PasswordFieldSignUp(
             tile = "Password",
             input = viewModel.uiStateSignUp.password,
-            isError = !viewModel.validatePassword(viewModel.uiStateSignUp.password).successful,
+            isError = false,
             imeAction = ImeAction.Next,
             keyboardActions = KeyboardActions(onNext = { localFocusManager.moveFocus(FocusDirection.Down) })
 
@@ -250,7 +133,7 @@ private fun BodyUIRegisterScreen(
         PasswordFieldSignUp(
             tile = "Conform Password",
             input = viewModel.uiStateSignUp.conformPassword,
-            isError = !viewModel.validateRepeatedPassword(viewModel.uiStateSignUp.password,viewModel.uiStateSignUp.conformPassword).successful,
+            isError = false,
             imeAction = ImeAction.Done,
             keyboardActions = KeyboardActions(onDone = { localFocusManager.clearFocus() })
 
@@ -258,13 +141,26 @@ private fun BodyUIRegisterScreen(
             viewModel.uiStateSignUp.conformPassword = conformPassword
         }
         Spacer(modifier = Modifier.height(10.dp))
-//        ConditionRow("Minimun 6 characters", viewModel.validateMinimum(viewModel.uiState.password))
-//        ConditionRow(
-//            "Conform password",
-//            viewModel.conformPassword(viewModel.uiState.password, viewModel.uiState.conformPassword)
-//        )
+        AnimatedVisibility(!viewModel.validatePassword(viewModel.uiStateSignUp.password)) {
+            ConditionRow("Minimun 6 characters", false)
 
-        ButtonAuth("Sign Up", onClick = onClickSignUp)
+        }
+        AnimatedVisibility(
+            visible = !viewModel.validateRepeatedPassword(
+                viewModel.uiStateSignUp.password, viewModel.uiStateSignUp.conformPassword
+            )
+        ) {
+            ConditionRow(
+                "Conform password", false
+            )
+        }
+
+
+        ButtonAuth(
+            "Sign Up",
+            viewModel.uiStateSignUp.emailValidation && viewModel.uiStateSignUp.passwordValidation && viewModel.uiStateSignUp.conformPasswordValidation,
+            onClick = onClickSignUp
+        )
         Spacer(modifier = Modifier.height(10.dp))
         TextAuth("Already have an account?", "Sign In", onClick = onClickSignIn)
         Spacer(modifier = Modifier.height(45.dp))
@@ -303,8 +199,7 @@ fun PasswordFieldSignUp(
 @Composable
 fun ConditionRow(condition: String, check: Boolean) {
     val color by animateColorAsState(
-        targetValue = if (check) Color.Green else Color.Red,
-        label = "text color"
+        targetValue = if (check) Color.Green else Color.Red, label = "text color"
     )
     val icon = if (check) Icons.Default.Check else Icons.Default.Close
     Row {

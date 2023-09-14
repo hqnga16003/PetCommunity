@@ -77,16 +77,6 @@ class LoginScreenViewModel @Inject constructor(private val repository: AuthRepos
         }
     }
 
-
-//    fun conformPassword(password: String, conformPassword: String): Boolean {
-//        return password == conformPassword
-//    }
-//
-//    fun validateMinimum(password: String): Boolean =
-//        password.matches(Regex(".{6,}"))
-
-
-
     fun logOut() {
         repository.logOut()
         _loginState.value = LoginState.Initial
