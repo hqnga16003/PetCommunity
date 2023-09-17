@@ -8,9 +8,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.petcommunity.BottomBarScreen
-import com.example.petcommunity.screen.authScreen.LoginScreenViewModel
+import com.example.petcommunity.screen.authScreen.login.LoginScreenViewModel
 import com.example.petcommunity.screen.authScreen.login.LoginScreen
-import com.example.petcommunity.screen.authScreen.LoginState
+import com.example.petcommunity.screen.authScreen.login.LoginState
+import com.example.petcommunity.screen.authScreen.forgotPassword.ForgotPasswordScreen
 import com.example.petcommunity.screen.authScreen.signUp.SignUpScreen
 import com.example.petcommunity.screen.favoriteScreen.FavoriteScreen
 import com.example.petcommunity.screen.homeScreen.HomeScreen
@@ -35,6 +36,9 @@ fun Navigation(navController: NavHostController) {
         }
         composable("signUp") {
             SignUpScreen(navController)
+        }
+        composable("forgotPassword") {
+            ForgotPasswordScreen()
         }
         composable(BottomBarScreen.Home.route) {
             HomeScreen(navController = navController) {

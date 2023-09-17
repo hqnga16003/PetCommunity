@@ -1,4 +1,4 @@
-package com.example.petcommunity.screen.authScreen
+package com.example.petcommunity.screen.authScreen.login
 
 sealed class LoginState {
     object Initial : LoginState()

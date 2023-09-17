@@ -60,7 +60,7 @@ fun TextFieldLogin(
 }
 
 @Composable
-fun TextAuth(titleFirst:String,titlesecond:String,onClick: () -> Unit) {
+fun TextAuth(titleFirst:String, titleSecond:String, onClick: () -> Unit) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         Text(
             text = titleFirst,
@@ -68,7 +68,7 @@ fun TextAuth(titleFirst:String,titlesecond:String,onClick: () -> Unit) {
             modifier = Modifier.padding(end = 3.dp)
         )
         Text(
-            text = titlesecond,
+            text = titleSecond,
             style = MaterialTheme.typography.titleSmall.copy(color = GreenText),
             modifier = Modifier.clickable(onClick = onClick)
         )

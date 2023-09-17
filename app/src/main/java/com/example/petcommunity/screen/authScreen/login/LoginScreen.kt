@@ -1,7 +1,6 @@
 package com.example.petcommunity.screen.authScreen.login
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -48,8 +47,6 @@ import com.example.petcommunity.R
 import com.example.petcommunity.screen.authScreen.ButtonAuth
 import com.example.petcommunity.screen.authScreen.ButtonLoginOther
 import com.example.petcommunity.screen.authScreen.DividerUILogin
-import com.example.petcommunity.screen.authScreen.LoginState
-import com.example.petcommunity.screen.authScreen.LoginScreenViewModel
 import com.example.petcommunity.screen.authScreen.TextAuth
 import com.example.petcommunity.screen.authScreen.TextFieldLogin
 import com.example.petcommunity.ui.theme.GreenText
@@ -85,6 +82,7 @@ fun LoginScreen(viewModel: LoginScreenViewModel, navController: NavHostControlle
             },
             viewModel = viewModel,
             onClickSignUp = { navController.navigate("signUp") },
+            onClickForgotPassword = {navController.navigate("forgotPassword")},
             onClickSignIn = {
                 viewModel.login(viewModel.uiState.email, viewModel.uiState.password)
                     .invokeOnCompletion {
@@ -128,7 +126,8 @@ fun BodyUILoginScreen(
     modifier: Modifier = Modifier,
     viewModel: LoginScreenViewModel,
     onClickSignUp: () -> Unit,
-    onClickSignIn: () -> Unit
+    onClickSignIn: () -> Unit,
+    onClickForgotPassword:()->Unit
 
 ) {
     val localFocusManager = LocalFocusManager.current
@@ -150,9 +149,7 @@ fun BodyUILoginScreen(
         }
         Spacer(modifier = Modifier.height(10.dp))
 
-        TextForgotPassword() {
-            // event
-        }
+        TextForgotPassword(onClick = onClickForgotPassword)
         Spacer(modifier = Modifier.height(30.dp))
         ButtonAuth("Sign In", true,onClick = onClickSignIn)
 

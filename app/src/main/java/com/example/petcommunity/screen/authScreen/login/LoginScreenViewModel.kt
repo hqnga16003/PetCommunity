@@ -1,4 +1,4 @@
-package com.example.petcommunity.screen.authScreen
+package com.example.petcommunity.screen.authScreen.login
 
 import android.content.Context
 import androidx.compose.runtime.Stable
@@ -25,7 +25,6 @@ interface LoginScreenState {
 private class MutableLoginScreenUiState : LoginScreenState {
     override var email: String by mutableStateOf("hqnga1604@gmail.com")
     override var password: String by mutableStateOf("Quangnga160302@")
-
 }
 
 

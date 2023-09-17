@@ -1,6 +1,5 @@
 package com.example.petcommunity.screen.authScreen.signUp
 
-import android.util.Log
 import android.util.Patterns
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -9,9 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.petcommunity.data.AuthRepository
-import com.example.petcommunity.screen.authScreen.LoginState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,7 +32,6 @@ class MutableSignUpFormState() : SignUpFormState {
     override var conformPasswordValidation: Boolean by mutableStateOf(false)
 }
 
-data class ValidationResult(val successful: Boolean, val errorMessage: String? = null)
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(private val repository: AuthRepository) : ViewModel() {
