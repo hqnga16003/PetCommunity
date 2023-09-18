@@ -39,7 +39,7 @@ import com.example.petcommunity.ui.theme.GreenText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TextFieldLogin(
+fun TextFieldEmail(
     tile: String,
     input: String,
     typeKeyboardType: KeyboardType,

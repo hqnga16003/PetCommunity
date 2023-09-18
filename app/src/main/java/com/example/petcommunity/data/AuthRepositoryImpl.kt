@@ -36,6 +36,13 @@ class AuthRepositoryImpl @Inject constructor(private val firebaseAuth: FirebaseA
         }
     }
 
+    override  fun sendPasswordResetEmail(email: String) {
+        firebaseAuth.sendPasswordResetEmail(email).addOnCompleteListener {
+            Log.d("XXX", "Email sent.");
+
+        }
+    }
+
     override fun logOut() {
         firebaseAuth.signOut()
     }

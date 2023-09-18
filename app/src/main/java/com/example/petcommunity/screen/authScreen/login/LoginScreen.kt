@@ -48,7 +48,7 @@ import com.example.petcommunity.screen.authScreen.ButtonAuth
 import com.example.petcommunity.screen.authScreen.ButtonLoginOther
 import com.example.petcommunity.screen.authScreen.DividerUILogin
 import com.example.petcommunity.screen.authScreen.TextAuth
-import com.example.petcommunity.screen.authScreen.TextFieldLogin
+import com.example.petcommunity.screen.authScreen.TextFieldEmail
 import com.example.petcommunity.ui.theme.GreenText
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -133,7 +133,7 @@ fun BodyUILoginScreen(
     val localFocusManager = LocalFocusManager.current
 
     Column(modifier = modifier) {
-        TextFieldLogin(
+        TextFieldEmail(
             "Email Address",
             viewModel.uiState.email,
             KeyboardType.Email, localFocusManager
