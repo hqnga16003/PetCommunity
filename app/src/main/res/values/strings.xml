@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">PetCommunity</string>
+    <string name="login_Error">Login failed</string>
+    <string name="preference_myAccount">preference_myAccount</string>
+    <string name="registration_failed">registration failed</string>
+
+
 </resources>
