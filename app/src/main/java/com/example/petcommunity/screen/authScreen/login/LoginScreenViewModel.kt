@@ -1,6 +1,7 @@
 package com.example.petcommunity.screen.authScreen.login
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,9 +29,9 @@ private class MutableLoginScreenUiState : LoginScreenState {
 }
 
 
-
 @HiltViewModel
-class LoginScreenViewModel @Inject constructor(private val repository: AuthRepository) : ViewModel() {
+class LoginScreenViewModel @Inject constructor(private val repository: AuthRepository) :
+    ViewModel() {
     private val _uiState = MutableLoginScreenUiState()
     val uiState: LoginScreenState get() = _uiState
 
@@ -40,7 +41,6 @@ class LoginScreenViewModel @Inject constructor(private val repository: AuthRepos
 
     val currentUser: FirebaseUser?
         get() = repository.currenUser
-
 
 
     init {
@@ -54,12 +54,12 @@ class LoginScreenViewModel @Inject constructor(private val repository: AuthRepos
         repository.login(email, password)
         if (currentUser != null) {
             _loginState.value = LoginState.Success
+            Log.d("XXX", currentUser!!.email.toString())
         } else {
             _loginState.value = LoginState.Error(R.string.login_Error.toString())
         }
 
     }
-
 
 
     private fun saveSharePreferences(context: Context) {
