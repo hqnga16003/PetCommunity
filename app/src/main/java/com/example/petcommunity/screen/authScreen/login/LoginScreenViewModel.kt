@@ -54,9 +54,10 @@ class LoginScreenViewModel @Inject constructor(private val repository: AuthRepos
         repository.login(email, password)
         if (currentUser != null) {
             _loginState.value = LoginState.Success
-            Log.d("XXX", currentUser!!.email.toString())
+            Log.d("XXX", "1")
         } else {
             _loginState.value = LoginState.Error(R.string.login_Error.toString())
+            Log.d("XXX", "2")
         }
 
     }
