@@ -1,6 +1,7 @@
 package com.example.petcommunity.screen.authScreen.login
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -54,16 +55,14 @@ class LoginScreenViewModel @Inject constructor(private val repository: AuthRepos
         repository.login(email, password)
         if (currentUser != null) {
             _loginState.value = LoginState.Success
-            Log.d("XXX", "1")
         } else {
             _loginState.value = LoginState.Error(R.string.login_Error.toString())
-            Log.d("XXX", "2")
         }
 
     }
 
 
-    private fun saveSharePreferences(context: Context) {
+     fun saveSharePreferences(context: Context) {
         val sharedPref = context.getSharedPreferences(
             R.string.preference_myAccount.toString(),
             Context.MODE_PRIVATE
@@ -76,6 +75,7 @@ class LoginScreenViewModel @Inject constructor(private val repository: AuthRepos
 
         }
     }
+
 
     fun logOut() {
         repository.logOut()

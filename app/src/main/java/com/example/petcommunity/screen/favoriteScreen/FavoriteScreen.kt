@@ -9,20 +9,21 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.petcommunity.BottomBarScaffold
 import com.example.petcommunity.FloatingActionButtonScaffold
 
 @Composable
-fun FavoriteScreen(navController: NavController) {
+fun FavoriteScreen(navHostController: NavHostController) {
     Log.d("XXX","FavoriteScreen")
 
     Scaffold(floatingActionButton = {
-        FloatingActionButtonScaffold()
+        FloatingActionButtonScaffold(navHostController)
     },
         floatingActionButtonPosition = FabPosition.Center,
         isFloatingActionButtonDocked = true,
         bottomBar = {
-            BottomBarScaffold(navController)
+            BottomBarScaffold(navHostController)
         }) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
             Text(text = "FavoriteScreen")

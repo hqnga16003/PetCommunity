@@ -1,6 +1,7 @@
 package com.example.petcommunity.screen.authScreen.login
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -87,11 +88,13 @@ fun LoginScreen(viewModel: LoginScreenViewModel, navController: NavHostControlle
                 viewModel.login(viewModel.uiState.email, viewModel.uiState.password)
                     .invokeOnCompletion {
                         if (viewModel.loginState.value == LoginState.Success) {
+                            viewModel.saveSharePreferences(context)
                             navController.popBackStack()
                             navController.navigate(BottomBarScreen.Home.route)
 
                         } else {
                             Toast.makeText(context, R.string.login_Error, Toast.LENGTH_LONG).show()
+
                         }
 
                     }

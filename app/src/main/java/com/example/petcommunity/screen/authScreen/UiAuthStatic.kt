@@ -37,7 +37,6 @@ import com.example.petcommunity.R
 import com.example.petcommunity.ui.theme.GreenText
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TextFieldEmail(
     tile: String,

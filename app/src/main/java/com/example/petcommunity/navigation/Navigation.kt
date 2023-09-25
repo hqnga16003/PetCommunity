@@ -13,13 +13,15 @@ import com.example.petcommunity.screen.authScreen.login.LoginScreen
 import com.example.petcommunity.screen.authScreen.login.LoginState
 import com.example.petcommunity.screen.authScreen.forgotPassword.ForgotPasswordScreen
 import com.example.petcommunity.screen.authScreen.signUp.SignUpScreen
+import com.example.petcommunity.screen.createPostScreen.CreatePostScreen
+import com.example.petcommunity.screen.createPostScreen.CreatePostScreenViewModel
 import com.example.petcommunity.screen.favoriteScreen.FavoriteScreen
 import com.example.petcommunity.screen.homeScreen.HomeScreen
 import com.example.petcommunity.screen.settingsScreen.SettingsScreen
 import com.example.petcommunity.screen.userScreen.UserScreen
 
 @Composable
-fun Navigation(navController: NavHostController) {
+fun Navigation(navController: NavHostController, viewModel: CreatePostScreenViewModel) {
     val authViewModel: LoginScreenViewModel = hiltViewModel()
     val context = LocalContext.current
 
@@ -38,27 +40,32 @@ fun Navigation(navController: NavHostController) {
             SignUpScreen(navController)
         }
         composable("forgotPassword") {
-            ForgotPasswordScreen()
+            ForgotPasswordScreen(navController)
         }
         composable(BottomBarScreen.Home.route) {
-            HomeScreen(navController = navController) {
+            HomeScreen(navController)
+        }
+        composable(BottomBarScreen.Favorite.route) {
+            FavoriteScreen(navController)
+        }
+        composable(BottomBarScreen.Profile.route) {
+            UserScreen(navController) {
                 authViewModel.logOut()
                 navController.navigate("login") {
                     popUpTo(navController.graph.id)
-
                 }
             }
         }
-        composable(BottomBarScreen.Favorite.route) {
-            FavoriteScreen(navController = navController)
-        }
-        composable(BottomBarScreen.Profile.route) {
-            UserScreen(navController = navController)
-        }
         composable(BottomBarScreen.Settings.route) {
-            SettingsScreen(navController = navController)
+            SettingsScreen(navController)
+        }
+
+        composable("createPostScreen") {
+            CreatePostScreen(viewModel,navController)
         }
 
 
     }
 }
+
+

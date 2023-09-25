@@ -1,76 +1,76 @@
 package com.example.petcommunity
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomAppBar
-import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.Button
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 
+
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppBottomNavigation(navController: NavController) {
-    val items = listOf(
-        BottomBarScreen.Home,
-        BottomBarScreen.Favorite,
-        BottomBarScreen.Profile,
-        BottomBarScreen.Settings
-    )
-
-    BottomNavigation {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry?.destination?.route
-
-        items.forEach { it ->
-            BottomNavigationItem(
-                selected = currentRoute == it.route,
-                onClick = { navController.navigate(it.route) },
-                icon = { Icon(it.icon, contentDescription = "") },
-                label = { Text(text = it.title) },
-                unselectedContentColor = Color.White.copy(0.4f),
-                selectedContentColor = Color.White
-            )
-        }
-
-
+fun FloatingActionButtonScaffold(navHostController: NavHostController) {
+    var isShowBottomSheet by remember {
+        mutableStateOf(false)
     }
-}
 
-@Composable
-fun FloatingActionButtonScaffold() {
+    val sheetState = rememberModalBottomSheetState()
+    val coroutine = rememberCoroutineScope()
     FloatingActionButton(
-        onClick = { /*TODO*/ }, shape = CircleShape
+        onClick = { navHostController.navigate("createPostScreen") }, shape = CircleShape
     ) {
         androidx.compose.material3.Icon(
             Icons.Default.Add,
             contentDescription = "add",
             tint = Color.White
         )
+
     }
+
+
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomBarScaffold(navController: NavController) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
+fun BottomBarScaffold(navHostController: NavHostController) {
+    val navBackStackEntry by navHostController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+
+
+
     BottomAppBar(
         cutoutShape = CircleShape, modifier = Modifier.clip(
             RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp)
@@ -90,21 +90,22 @@ fun BottomBarScaffold(navController: NavController) {
             ) {
 
                 BottomNavigationItem(selected = currentRoute == BottomBarScreen.Home.route,
-                    onClick = { navController.navigate(BottomBarScreen.Home.route) },
+                    onClick = { navHostController.navigate(BottomBarScreen.Home.route) },
                     icon = {
                         Icon(
                             BottomBarScreen.Home.icon,
                             contentDescription = ""
                         )
                     })
-                BottomNavigationItem(selected = currentRoute == BottomBarScreen.Favorite.route,
-                    onClick = { navController.navigate(BottomBarScreen.Favorite.route) },
+                BottomNavigationItem(selected = currentRoute == BottomBarScreen.Profile.route,
+                    onClick = { navHostController.navigate(BottomBarScreen.Profile.route) },
                     icon = {
                         Icon(
-                            BottomBarScreen.Favorite.icon,
+                            BottomBarScreen.Profile.icon,
                             contentDescription = ""
                         )
                     })
+
             }
             Row(
                 modifier = Modifier.constrainAs(rightMenus) {
@@ -115,17 +116,17 @@ fun BottomBarScaffold(navController: NavController) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                BottomNavigationItem(selected = currentRoute == BottomBarScreen.Profile.route,
-                    onClick = { navController.navigate(BottomBarScreen.Profile.route) },
+
+                BottomNavigationItem(selected = currentRoute == BottomBarScreen.Favorite.route,
+                    onClick = { navHostController.navigate(BottomBarScreen.Favorite.route) },
                     icon = {
                         Icon(
-                            BottomBarScreen.Profile.icon,
+                            BottomBarScreen.Favorite.icon,
                             contentDescription = ""
                         )
                     })
-
                 BottomNavigationItem(selected = currentRoute == BottomBarScreen.Settings.route,
-                    onClick = { navController.navigate(BottomBarScreen.Settings.route) },
+                    onClick = { navHostController.navigate(BottomBarScreen.Settings.route) },
                     icon = {
                         Icon(
                             BottomBarScreen.Settings.icon,
@@ -134,5 +135,26 @@ fun BottomBarScaffold(navController: NavController) {
                     })
             }
         }
+
+
     }
 }
+
+
+//
+//if (isShowBottomSheet) {
+//    ModalBottomSheet(modifier = Modifier.fillMaxSize(),
+//        onDismissRequest = {
+//            coroutine.launch { sheetState.show() }.invokeOnCompletion {
+//                isShowBottomSheet = false
+//
+//            }
+//        },
+//        sheetState = sheetState,
+//
+//        ) {
+//        Column(modifier = Modifier.fillMaxSize()) {
+//            CreatePostScreen()
+//        }
+//    }
+//}

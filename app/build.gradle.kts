@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.example.petcommunity"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.petcommunity"
@@ -73,8 +73,10 @@ dependencies {
     //fire base
     implementation(platform("com.google.firebase:firebase-bom:32.2.3"))
     implementation("com.google.firebase:firebase-analytics-ktx")
-        //fire base auth
     implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-storage")
+    implementation("com.google.firebase:firebase-firestore-ktx")
+
 
 
     // hilt
@@ -90,7 +92,15 @@ dependencies {
     implementation("androidx.compose.material:material:1.4.1")
     //constraintlayout
     implementation ("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+    //  glide
+    implementation ("com.github.bumptech.glide:compose:1.0.0-alpha.5")
 
+    //modal bottom sheet
+    implementation ("androidx.compose.material3:material3:1.2.0-alpha02")
+
+
+    //coli
+    implementation("io.coil-kt:coil-compose:2.4.0")
 
 }
 kapt {
