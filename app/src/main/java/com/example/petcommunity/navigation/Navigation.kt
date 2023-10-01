@@ -1,5 +1,6 @@
 package com.example.petcommunity.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
@@ -7,7 +8,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.petcommunity.BottomBarScreen
+import com.example.petcommunity.model.Pet
+import com.example.petcommunity.model.PetBookNavigation
+import com.example.petcommunity.model.PetsNavType
 import com.example.petcommunity.screen.authScreen.login.LoginScreenViewModel
 import com.example.petcommunity.screen.authScreen.login.LoginScreen
 import com.example.petcommunity.screen.authScreen.login.LoginState
@@ -15,10 +20,12 @@ import com.example.petcommunity.screen.authScreen.forgotPassword.ForgotPasswordS
 import com.example.petcommunity.screen.authScreen.signUp.SignUpScreen
 import com.example.petcommunity.screen.createPostScreen.CreatePostScreen
 import com.example.petcommunity.screen.createPostScreen.CreatePostScreenViewModel
+import com.example.petcommunity.screen.detailsScreen.Details
 import com.example.petcommunity.screen.favoriteScreen.FavoriteScreen
 import com.example.petcommunity.screen.homeScreen.HomeScreen
 import com.example.petcommunity.screen.settingsScreen.SettingsScreen
 import com.example.petcommunity.screen.userScreen.UserScreen
+import com.google.gson.Gson
 
 @Composable
 fun Navigation(navController: NavHostController, viewModel: CreatePostScreenViewModel) {
@@ -32,6 +39,7 @@ fun Navigation(navController: NavHostController, viewModel: CreatePostScreenView
         }
     }
 
+
     NavHost(navController = navController, startDestination = "login") {
         composable("login") {
             LoginScreen(viewModel = authViewModel, navController = navController)
@@ -44,6 +52,21 @@ fun Navigation(navController: NavHostController, viewModel: CreatePostScreenView
         }
         composable(BottomBarScreen.Home.route) {
             HomeScreen(navController)
+        }
+
+        composable(
+            PetBookNavigation.route,
+            arguments = listOf(navArgument(PetBookNavigation.petArg) {
+                nullable = true
+                type = PetsNavType()
+            })
+        ) {
+            val pet = PetBookNavigation.from(it)
+
+
+
+            Details(navController, pet!!)
+
         }
         composable(BottomBarScreen.Favorite.route) {
             FavoriteScreen(navController)
@@ -61,8 +84,11 @@ fun Navigation(navController: NavHostController, viewModel: CreatePostScreenView
         }
 
         composable("createPostScreen") {
-            CreatePostScreen(viewModel,navController)
+            CreatePostScreen(viewModel, navController)
+
         }
+
+
 
 
     }

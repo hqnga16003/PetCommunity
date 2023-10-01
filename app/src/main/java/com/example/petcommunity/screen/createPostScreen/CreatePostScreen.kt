@@ -3,10 +3,6 @@ package com.example.petcommunity.screen.createPostScreen
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
-import android.net.Uri
-import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,7 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -36,11 +32,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -57,19 +49,19 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.petcommunity.BottomBarScreen
 import com.example.petcommunity.R
 import com.example.petcommunity.SharePreferences
-import com.example.petcommunity.model.Post
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FirebaseStorage
-import java.io.ByteArrayOutputStream
+import com.example.petcommunity.model.Pet
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import okhttp3.internal.wait
 import java.io.File
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.Date
 import java.util.Objects
@@ -77,8 +69,9 @@ import java.util.Objects
 
 @SuppressLint("NewApi")
 @Composable
-fun CreatePostScreen(viewModel: CreatePostScreenViewModel,navHostController: NavHostController) {
+fun CreatePostScreen(viewModel: CreatePostScreenViewModel, navHostController: NavHostController) {
 
+    val coroutine = rememberCoroutineScope()
     val context = LocalContext.current
     val file = context.createImageFile();
     val uri = FileProvider.getUriForFile(
@@ -116,95 +109,135 @@ fun CreatePostScreen(viewModel: CreatePostScreenViewModel,navHostController: Nav
         topBar = {
             TopBarCreatePostScreen() {
 
-                val post = Post(
-                    address = viewModel.uiState.address,
-                    content = viewModel.uiState.content,
-                    createAt = LocalDateTime.now().toString(),
-                    phoneNumber = viewModel.uiState.phoneNumber.toInt(),
-                    quantity = viewModel.uiState.quantity.toInt(),
-                    uIdCreate = SharePreferences.getSharePreferences(context)
 
-                )
                 val uId = SharePreferences.getSharePreferences(context)
-                viewModel.addPost(post,uId,viewModel.uiState.capturedImageUri)
-                viewModel.init()
+                val pet = Pet(
+                    name = viewModel.uiState.petName,
+                    age = viewModel.uiState.petAge,
+                    gender = viewModel.uiState.petGender,
+                    color = viewModel.uiState.petColor,
+                    weight = viewModel.uiState.petWeight,
+                    location = viewModel.uiState.address,
+                    content = viewModel.uiState.content,
+                    phoneNumber = viewModel.uiState.phoneNumber,
+                    uId = uId,
+                    createAt = LocalDate.now().toString(),
+                    check = false
+                )
+                viewModel.addPost(pet, uId, viewModel.uiState.capturedImageUri)
                 navHostController.navigate(BottomBarScreen.Home.route)
+
+
             }
         }
     ) { paddingValues ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            Divider(
-                modifier = Modifier.fillMaxWidth(),
-                thickness = 2.dp,
-                color = Color(0xFFA2A3A3)
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            if (viewModel.uiState.capturedImageUri.path?.isNotEmpty() == true) {
-                ImagePet(rememberAsyncImagePainter(model = viewModel.uiState.capturedImageUri))
-            } else {
-                ImagePet(painterResource(id = R.drawable.img_default))
-            }
-            ButtonPhoto(
-                onClickGetPhoto = {
-                    val permissionCheckResult =
-                        ContextCompat.checkSelfPermission(
-                            context,
-                            android.Manifest.permission.READ_MEDIA_IMAGES
-                        )
-                    if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
-                        pickPhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                    } else {
-                        requestPermissionLauncher.launch(android.Manifest.permission.READ_MEDIA_IMAGES)
-                    }
-                },
-                onClickOpenCamera = {
-                    val permissionCheckResult =
-                        ContextCompat.checkSelfPermission(
-                            context,
-                            android.Manifest.permission.CAMERA
-                        )
-                    if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
-                        openCamera.launch(uri)
-                    } else {
-                        requestPermissionLauncher.launch(android.Manifest.permission.CAMERA)
-                    }
-                })
+            item() {
+                Divider(
+                    modifier = Modifier.fillMaxWidth(),
+                    thickness = 2.dp,
+                    color = Color(0xFFA2A3A3)
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                if (viewModel.uiState.capturedImageUri.path?.isNotEmpty() == true) {
+                    ImagePet(rememberAsyncImagePainter(model = viewModel.uiState.capturedImageUri))
+                } else {
+                    ImagePet(painterResource(id = R.drawable.img_default))
+                }
+                ButtonPhoto(
+                    onClickGetPhoto = {
+                        val permissionCheckResult =
+                            ContextCompat.checkSelfPermission(
+                                context,
+                                android.Manifest.permission.READ_MEDIA_IMAGES
+                            )
+                        if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
+                            pickPhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                        } else {
+                            requestPermissionLauncher.launch(android.Manifest.permission.READ_MEDIA_IMAGES)
+                        }
+                    },
+                    onClickOpenCamera = {
+                        val permissionCheckResult =
+                            ContextCompat.checkSelfPermission(
+                                context,
+                                android.Manifest.permission.CAMERA
+                            )
+                        if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
+                            openCamera.launch(uri)
+                        } else {
+                            requestPermissionLauncher.launch(android.Manifest.permission.CAMERA)
+                        }
+                    })
 
-            TextFieldInput(
-                tile = "Nội dung",
-                input = viewModel.uiState.content,
-                typeKeyboardType = KeyboardType.Text,
-                localFocusManager = localFocusManager,
-            ) {
-                viewModel.uiState.content = it
-            }
-            TextFieldInput(
-                tile = "Số lượng",
-                input = viewModel.uiState.quantity,
-                typeKeyboardType = KeyboardType.Number,
-                localFocusManager = localFocusManager,
-            ) {
-                viewModel.uiState.quantity = it
-            }
-            TextFieldInput(
-                tile = "Địa chỉ",
-                input = viewModel.uiState.address,
-                typeKeyboardType = KeyboardType.Text,
-                localFocusManager = localFocusManager,
-            ) {
-                viewModel.uiState.address = it
-            }
-            TextFieldInput(
-                tile = "Số điện thoại",
-                input = viewModel.uiState.phoneNumber,
-                typeKeyboardType = KeyboardType.Number,
-                localFocusManager = localFocusManager,
-            ) {
-                viewModel.uiState.address = it
+                TextFieldInput(
+                    tile = "Nội dung",
+                    input = viewModel.uiState.content,
+                    typeKeyboardType = KeyboardType.Text,
+                    localFocusManager = localFocusManager,
+                ) {
+                    viewModel.uiState.content = it
+                }
+                TextFieldInput(
+                    tile = "Tên thú cưng",
+                    input = viewModel.uiState.petName,
+                    typeKeyboardType = KeyboardType.Text,
+                    localFocusManager = localFocusManager,
+                ) {
+                    viewModel.uiState.content = it
+                }
+                TextFieldInput(
+                    tile = "Giới tính",
+                    input = viewModel.uiState.petGender,
+                    typeKeyboardType = KeyboardType.Text,
+                    localFocusManager = localFocusManager,
+                ) {
+                    viewModel.uiState.content = it
+                }
+                TextFieldInput(
+                    tile = "Tháng tuổi",
+                    input = viewModel.uiState.petAge,
+                    typeKeyboardType = KeyboardType.Number,
+                    localFocusManager = localFocusManager,
+                ) {
+                    viewModel.uiState.content = it
+                }
+                TextFieldInput(
+                    tile = "Màu",
+                    input = viewModel.uiState.petAge,
+                    typeKeyboardType = KeyboardType.Text,
+                    localFocusManager = localFocusManager,
+                ) {
+                    viewModel.uiState.content = it
+                }
+                TextFieldInput(
+                    tile = "Cân nặng",
+                    input = viewModel.uiState.petAge,
+                    typeKeyboardType = KeyboardType.Number,
+                    localFocusManager = localFocusManager,
+                ) {
+                    viewModel.uiState.content = it
+                }
+                TextFieldInput(
+                    tile = "Địa chỉ",
+                    input = viewModel.uiState.address,
+                    typeKeyboardType = KeyboardType.Text,
+                    localFocusManager = localFocusManager,
+                ) {
+                    viewModel.uiState.address = it
+                }
+                TextFieldInput(
+                    tile = "Số điện thoại",
+                    input = viewModel.uiState.phoneNumber,
+                    typeKeyboardType = KeyboardType.Number,
+                    localFocusManager = localFocusManager,
+                ) {
+                    viewModel.uiState.address = it
+                }
             }
         }
     }

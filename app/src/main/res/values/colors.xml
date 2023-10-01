@@ -10,4 +10,8 @@
     <color name="blue">#FF006AF6</color>
     <color name="red">#FFEB5757</color>
     <color name="background_home">#ABFFEF9B</color>
+    <color name="text">#1E3054</color>
+
+    <color name="card">#F9F9F9</color>
+
 </resources>

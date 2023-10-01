@@ -100,7 +100,7 @@ fun LoginScreen(viewModel: LoginScreenViewModel, navController: NavHostControlle
                     }
             })
         if (loginState.value == LoginState.Loading) {
-            CircularProgressIndicator(modifier = Modifier.constrainAs(refLoading) {
+                CircularProgressIndicator(modifier = Modifier.constrainAs(refLoading) {
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
                 start.linkTo(parent.start)

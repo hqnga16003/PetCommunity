@@ -4,6 +4,9 @@ plugins {
     id("com.google.gms.google-services")
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
+
+    id ("kotlin-parcelize")
+
 }
 
 android {
@@ -101,6 +104,12 @@ dependencies {
 
     //coli
     implementation("io.coil-kt:coil-compose:2.4.0")
+
+    //moshi
+    implementation("com.squareup.moshi:moshi-kotlin:1.14.0")
+
+    implementation ("com.google.code.gson:gson:2.10.1")
+
 
 }
 kapt {

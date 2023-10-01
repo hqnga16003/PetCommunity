@@ -1,6 +1,5 @@
 package com.example.petcommunity.component
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,17 +29,21 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.example.petcommunity.R
 import com.example.petcommunity.model.Pet
 
+
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun ItemDogCard(pet: Pet, onItemClicked: (pet: Pet) -> Unit) {
+fun ItemDogCard(dog: Pet, onItemClicked: (dog: Pet) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
             .clip(RoundedCornerShape(16.dp))
-            .clickable(onClick = { onItemClicked(pet) }),
+            .clickable(onClick = { onItemClicked(dog) }),
         elevation = 0.dp,
         backgroundColor = MaterialTheme.colors.surface
     ) {
@@ -50,65 +53,62 @@ fun ItemDogCard(pet: Pet, onItemClicked: (pet: Pet) -> Unit) {
                 .padding(16.dp)
         ) {
 
-            val image: Painter = painterResource(id = pet.image)
-            Image(
+            GlideImage(
                 modifier = Modifier
                     .size(80.dp, 80.dp)
                     .clip(RoundedCornerShape(16.dp)),
-                painter = image,
+                model = dog.image,
                 alignment = Alignment.CenterStart,
                 contentDescription = "",
                 contentScale = ContentScale.Crop
             )
-
             Spacer(modifier = Modifier.width(16.dp))
-
             Column(modifier = Modifier.align(Alignment.CenterVertically)) {
-                Text(
-                    text = pet.name,
-                    modifier = Modifier.padding(0.dp, 0.dp, 12.dp, 0.dp),
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.subtitle1
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = dog.name.toString(),
+                        modifier = Modifier.padding(0.dp, 0.dp, 12.dp, 0.dp),
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.subtitle1
+                    )
+
+                    GenderTag(dog.gender.toString())
+                }
+
 
                 Text(
                     text = buildString {
-                        append(pet.age)
+                        append(dog.age)
                         append("yrs | ")
-                        append(pet.gender)
+                        append(dog.gender)
                     },
                     modifier = Modifier.padding(0.dp, 0.dp, 12.dp, 0.dp),
                     style = MaterialTheme.typography.caption
                 )
 
-                Row(verticalAlignment = Alignment.Bottom) {
-
-                    val location: Painter = painterResource(id = R.drawable.ic_location)
-
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
                     Icon(
-                        painter = location,
+                        painter = painterResource(id = R.drawable.ic_location),
                         contentDescription = null,
                         modifier = Modifier.size(16.dp, 16.dp),
                         tint = Color.Red
                     )
 
                     Text(
-                        text = pet.location,
+                        text = dog.location.toString(),
                         modifier = Modifier.padding(8.dp, 12.dp, 12.dp, 0.dp),
                         style = MaterialTheme.typography.caption
                     )
                 }
             }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                GenderTag(pet.gender)
-            }
+
         }
     }
 }
+
 
 @Composable
 fun GenderTag(name: String) {
