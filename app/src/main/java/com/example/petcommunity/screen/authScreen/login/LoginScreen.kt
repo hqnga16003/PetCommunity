@@ -1,7 +1,6 @@
 package com.example.petcommunity.screen.authScreen.login
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -45,16 +45,19 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
 import com.example.petcommunity.BottomBarScreen
 import com.example.petcommunity.R
+import com.example.petcommunity.presentation.GoogleAuthUiClient
 import com.example.petcommunity.screen.authScreen.ButtonAuth
 import com.example.petcommunity.screen.authScreen.ButtonLoginOther
 import com.example.petcommunity.screen.authScreen.DividerUILogin
 import com.example.petcommunity.screen.authScreen.TextAuth
 import com.example.petcommunity.screen.authScreen.TextFieldEmail
-import com.example.petcommunity.ui.theme.GreenText
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun LoginScreen(viewModel: LoginScreenViewModel, navController: NavHostController) {
+fun LoginScreen(
+    viewModel: LoginScreenViewModel,
+    navController: NavHostController,
+) {
 
     val loginState = viewModel.loginState.collectAsState()
     val context = LocalContext.current
@@ -83,13 +86,12 @@ fun LoginScreen(viewModel: LoginScreenViewModel, navController: NavHostControlle
             },
             viewModel = viewModel,
             onClickSignUp = { navController.navigate("signUp") },
-            onClickForgotPassword = {navController.navigate("forgotPassword")},
+            onClickForgotPassword = { navController.navigate("forgotPassword") },
             onClickSignIn = {
                 viewModel.login(viewModel.uiState.email, viewModel.uiState.password)
                     .invokeOnCompletion {
                         if (viewModel.loginState.value == LoginState.Success) {
                             viewModel.saveSharePreferences(context)
-                            navController.popBackStack()
                             navController.navigate(BottomBarScreen.Home.route)
 
                         } else {
@@ -100,7 +102,7 @@ fun LoginScreen(viewModel: LoginScreenViewModel, navController: NavHostControlle
                     }
             })
         if (loginState.value == LoginState.Loading) {
-                CircularProgressIndicator(modifier = Modifier.constrainAs(refLoading) {
+            CircularProgressIndicator(modifier = Modifier.constrainAs(refLoading) {
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
                 start.linkTo(parent.start)
@@ -130,7 +132,7 @@ fun BodyUILoginScreen(
     viewModel: LoginScreenViewModel,
     onClickSignUp: () -> Unit,
     onClickSignIn: () -> Unit,
-    onClickForgotPassword:()->Unit
+    onClickForgotPassword: () -> Unit
 
 ) {
     val localFocusManager = LocalFocusManager.current
@@ -154,7 +156,7 @@ fun BodyUILoginScreen(
 
         TextForgotPassword(onClick = onClickForgotPassword)
         Spacer(modifier = Modifier.height(30.dp))
-        ButtonAuth("Sign In", true,onClick = onClickSignIn)
+        ButtonAuth("Sign In", true, onClick = onClickSignIn)
 
         Spacer(modifier = Modifier.height(10.dp))
         TextAuth("Don't have an account?", "Sign Up", onClick = onClickSignUp)
@@ -218,15 +220,12 @@ fun TextForgotPassword(onClick: () -> Unit) {
     Row(modifier = Modifier.fillMaxWidth(), Arrangement.End) {
         Text(
             text = "Forgot password?",
-            style = MaterialTheme.typography.titleSmall.copy(color = GreenText),
+            style = MaterialTheme.typography.titleSmall.copy(color = Color.Green),
             modifier = Modifier.clickable(onClick = onClick),
         )
     }
 
 }
-
-
-
 
 
 @Preview(showSystemUi = true)

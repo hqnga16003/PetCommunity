@@ -7,7 +7,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,16 +25,25 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults.buttonColors
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -43,6 +54,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -55,14 +67,10 @@ import com.example.petcommunity.BottomBarScreen
 import com.example.petcommunity.R
 import com.example.petcommunity.SharePreferences
 import com.example.petcommunity.model.Pet
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import okhttp3.internal.wait
+import com.google.firebase.firestore.FirebaseFirestore
 import java.io.File
 import java.text.SimpleDateFormat
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.util.Date
 import java.util.Objects
 
@@ -75,9 +83,7 @@ fun CreatePostScreen(viewModel: CreatePostScreenViewModel, navHostController: Na
     val context = LocalContext.current
     val file = context.createImageFile();
     val uri = FileProvider.getUriForFile(
-        Objects.requireNonNull(context),
-        context.packageName + ".provider",
-        file
+        Objects.requireNonNull(context), context.packageName + ".provider", file
     )
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -87,12 +93,11 @@ fun CreatePostScreen(viewModel: CreatePostScreenViewModel, navHostController: Na
 
         }
     }
-    val openCamera =
-        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
-            if (it) {
-                viewModel.uiState.capturedImageUri = uri
-            }
+    val openCamera = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
+        if (it) {
+            viewModel.uiState.capturedImageUri = uri
         }
+    }
 
     val pickPhoto =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.PickVisualMedia()) {
@@ -102,45 +107,45 @@ fun CreatePostScreen(viewModel: CreatePostScreenViewModel, navHostController: Na
         }
     val localFocusManager = LocalFocusManager.current
 
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(start = 16.dp, end = 16.dp),
-        topBar = {
-            TopBarCreatePostScreen() {
+    var gender:String? = null;
+    var address:String? = null;
+    var category:String? = null;
 
+    val db = FirebaseFirestore.getInstance()
+    Scaffold(modifier = Modifier
+        .fillMaxSize()
+        .background(color = colorResource(id = R.color.background))
+        .padding(start = 16.dp, end = 16.dp), topBar = {
+        TopBarCreatePostScreen() {
+            val uId = SharePreferences.getSharePreferences(context)
+            val pet = Pet(id = "",
+                name = category,
+                age = viewModel.uiState.petAge,
+                gender = gender,
+                color = viewModel.uiState.petColor,
+                weight = viewModel.uiState.petWeight,
+                location = address,
+                content = viewModel.uiState.content,
+                phoneNumber = viewModel.uiState.phoneNumber,
+                uid = uId,
+                createAt = LocalDate.now().toString(),
+                check = false,
+                userCheck = true,
+                favorite = "0"
+            )
+            viewModel.addPost(pet, uId, viewModel.uiState.capturedImageUri)
+            navHostController.navigate(BottomBarScreen.Home.route)
 
-                val uId = SharePreferences.getSharePreferences(context)
-                val pet = Pet(
-                    name = viewModel.uiState.petName,
-                    age = viewModel.uiState.petAge,
-                    gender = viewModel.uiState.petGender,
-                    color = viewModel.uiState.petColor,
-                    weight = viewModel.uiState.petWeight,
-                    location = viewModel.uiState.address,
-                    content = viewModel.uiState.content,
-                    phoneNumber = viewModel.uiState.phoneNumber,
-                    uId = uId,
-                    createAt = LocalDate.now().toString(),
-                    check = false
-                )
-                viewModel.addPost(pet, uId, viewModel.uiState.capturedImageUri)
-                navHostController.navigate(BottomBarScreen.Home.route)
-
-
-            }
         }
-    ) { paddingValues ->
+    }) { paddingValues ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(paddingValues),
         ) {
-            item() {
+            item {
                 Divider(
-                    modifier = Modifier.fillMaxWidth(),
-                    thickness = 2.dp,
-                    color = Color(0xFFA2A3A3)
+                    modifier = Modifier.fillMaxWidth(), thickness = 2.dp, color = Color(0xFFA2A3A3)
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 if (viewModel.uiState.capturedImageUri.path?.isNotEmpty() == true) {
@@ -148,32 +153,26 @@ fun CreatePostScreen(viewModel: CreatePostScreenViewModel, navHostController: Na
                 } else {
                     ImagePet(painterResource(id = R.drawable.img_default))
                 }
-                ButtonPhoto(
-                    onClickGetPhoto = {
-                        val permissionCheckResult =
-                            ContextCompat.checkSelfPermission(
-                                context,
-                                android.Manifest.permission.READ_MEDIA_IMAGES
-                            )
-                        if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
-                            pickPhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                        } else {
-                            requestPermissionLauncher.launch(android.Manifest.permission.READ_MEDIA_IMAGES)
-                        }
-                    },
-                    onClickOpenCamera = {
-                        val permissionCheckResult =
-                            ContextCompat.checkSelfPermission(
-                                context,
-                                android.Manifest.permission.CAMERA
-                            )
-                        if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
-                            openCamera.launch(uri)
-                        } else {
-                            requestPermissionLauncher.launch(android.Manifest.permission.CAMERA)
-                        }
-                    })
-
+                ButtonPhoto(onClickGetPhoto = {
+                    val permissionCheckResult = ContextCompat.checkSelfPermission(
+                        context, android.Manifest.permission.READ_MEDIA_IMAGES
+                    )
+                    if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
+                        pickPhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    } else {
+                        requestPermissionLauncher.launch(android.Manifest.permission.READ_MEDIA_IMAGES)
+                    }
+                }, onClickOpenCamera = {
+                    val permissionCheckResult = ContextCompat.checkSelfPermission(
+                        context, android.Manifest.permission.CAMERA
+                    )
+                    if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
+                        openCamera.launch(uri)
+                    } else {
+                        requestPermissionLauncher.launch(android.Manifest.permission.CAMERA)
+                    }
+                })
+                Spacer(modifier = Modifier.height(10.dp))
                 TextFieldInput(
                     tile = "Nội dung",
                     input = viewModel.uiState.content,
@@ -182,22 +181,19 @@ fun CreatePostScreen(viewModel: CreatePostScreenViewModel, navHostController: Na
                 ) {
                     viewModel.uiState.content = it
                 }
-                TextFieldInput(
-                    tile = "Tên thú cưng",
-                    input = viewModel.uiState.petName,
-                    typeKeyboardType = KeyboardType.Text,
-                    localFocusManager = localFocusManager,
-                ) {
-                    viewModel.uiState.content = it
+                Spacer(modifier = Modifier.height(10.dp))
+                ExposedDropdownMenuBoxCategory(){
+                    category = it;
                 }
-                TextFieldInput(
-                    tile = "Giới tính",
-                    input = viewModel.uiState.petGender,
-                    typeKeyboardType = KeyboardType.Text,
-                    localFocusManager = localFocusManager,
-                ) {
-                    viewModel.uiState.content = it
+
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                ExposedDropdownMenuBoxGender(){
+                    gender = it
                 }
+                Spacer(modifier = Modifier.height(10.dp))
+
                 TextFieldInput(
                     tile = "Tháng tuổi",
                     input = viewModel.uiState.petAge,
@@ -206,30 +202,33 @@ fun CreatePostScreen(viewModel: CreatePostScreenViewModel, navHostController: Na
                 ) {
                     viewModel.uiState.content = it
                 }
+                Spacer(modifier = Modifier.height(10.dp))
+
                 TextFieldInput(
                     tile = "Màu",
-                    input = viewModel.uiState.petAge,
+                    input = viewModel.uiState.petColor,
                     typeKeyboardType = KeyboardType.Text,
                     localFocusManager = localFocusManager,
                 ) {
-                    viewModel.uiState.content = it
+                    viewModel.uiState.petColor = it
                 }
+                Spacer(modifier = Modifier.height(10.dp))
+
                 TextFieldInput(
                     tile = "Cân nặng",
-                    input = viewModel.uiState.petAge,
+                    input = viewModel.uiState.petWeight,
                     typeKeyboardType = KeyboardType.Number,
                     localFocusManager = localFocusManager,
                 ) {
                     viewModel.uiState.content = it
                 }
-                TextFieldInput(
-                    tile = "Địa chỉ",
-                    input = viewModel.uiState.address,
-                    typeKeyboardType = KeyboardType.Text,
-                    localFocusManager = localFocusManager,
-                ) {
-                    viewModel.uiState.address = it
+                Spacer(modifier = Modifier.height(10.dp))
+
+                ExposedDropdownMenuBoxAddress(){
+                    address = it
                 }
+                Spacer(modifier = Modifier.height(10.dp))
+
                 TextFieldInput(
                     tile = "Số điện thoại",
                     input = viewModel.uiState.phoneNumber,
@@ -242,6 +241,162 @@ fun CreatePostScreen(viewModel: CreatePostScreenViewModel, navHostController: Na
         }
     }
 }
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ExposedDropdownMenuBoxGender(onClick: (String) -> Unit) {
+    var isExpanded by remember { mutableStateOf(false) }
+    var gender by remember { mutableStateOf("") }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        ExposedDropdownMenuBox(expanded = isExpanded, onExpandedChange = { isExpanded = it }) {
+            TextField(
+                value = gender,
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(
+                        expanded = isExpanded
+                    )
+                },
+                colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                modifier = Modifier
+                    .menuAnchor()
+                    .fillMaxWidth()
+            )
+
+            ExposedDropdownMenu(expanded = isExpanded, onDismissRequest = { false }) {
+                DropdownMenuItem(
+                    text = { Text(text = "Male") },
+                    onClick = {
+                        gender = "Male"
+                        isExpanded = false
+                        onClick(gender)
+                    })
+                DropdownMenuItem(
+                    text = { Text(text = "Female") },
+                    onClick = {
+                        gender = "Female"
+                        isExpanded = false
+                        onClick(gender)
+
+                    })
+                DropdownMenuItem(
+                    text = { Text(text = "Other") },
+                    onClick = {
+                        gender = "Other"
+                        isExpanded = false
+                        onClick(gender)
+
+                    })
+            }
+        }
+    }
+}
+
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ExposedDropdownMenuBoxAddress(onClick: (String) -> Unit) {
+    var isExpanded by remember { mutableStateOf(false) }
+    var address by remember { mutableStateOf("") }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        ExposedDropdownMenuBox(expanded = isExpanded, onExpandedChange = { isExpanded = it }) {
+            TextField(
+                value = address,
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(
+                        expanded = isExpanded
+                    )
+                },
+                modifier = Modifier
+                    .menuAnchor()
+                    .fillMaxWidth()
+            )
+
+            ExposedDropdownMenu(expanded = isExpanded, onDismissRequest = { false }) {
+                DropdownMenuItem(
+                    text = { Text(text = "Hà Nội") },
+                    onClick = {
+                        address = "Hà Nội"
+                        isExpanded = false
+                        onClick(address)
+                    })
+                DropdownMenuItem(
+                    text = { Text(text = "Hồ Chí Minh") },
+                    onClick = {
+                        address = "Hồ Chí Minh"
+                        isExpanded = false
+                        onClick(address)
+
+                    })
+                DropdownMenuItem(
+                    text = { Text(text = "Đà Nẵng") },
+                    onClick = {
+                        address = "Đà Nẵng"
+                        isExpanded = false
+                        onClick(address)
+
+                    })
+            }
+        }
+    }
+}
+
+
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ExposedDropdownMenuBoxCategory(onClick: (String) -> Unit) {
+    var isExpanded by remember { mutableStateOf(false) }
+    var category by remember { mutableStateOf("") }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        ExposedDropdownMenuBox(expanded = isExpanded, onExpandedChange = { isExpanded = it }) {
+            TextField(
+                value = category,
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(
+                        expanded = isExpanded
+                    )
+                },
+                colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                modifier = Modifier
+                    .menuAnchor()
+                    .fillMaxWidth()
+            )
+
+            ExposedDropdownMenu(expanded = isExpanded, onDismissRequest = { false }) {
+                DropdownMenuItem(
+                    text = { Text(text = "Dog") },
+                    onClick = {
+                        category = "Dog"
+                        isExpanded = false
+                        onClick(category)
+                    })
+                DropdownMenuItem(
+                    text = { Text(text = "Cat") },
+                    onClick = {
+                        category = "Cat"
+                        isExpanded = false
+                        onClick(category)
+
+                    })
+
+            }
+        }
+    }
+}
+
+
 
 @Composable
 private fun TextFieldInput(
@@ -326,8 +481,14 @@ fun TopBarCreatePostScreen(onClick: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(Icons.Default.ArrowBack, contentDescription = "")
-                Button(onClick = onClick) {
-                    Text(text = "Đăng")
+
+                Button(
+                    onClick = onClick,
+                ) {
+                    Text(
+                        text = "Đăng",
+                        style = androidx.compose.material.MaterialTheme.typography.body2,
+                    )
                 }
             }
         }

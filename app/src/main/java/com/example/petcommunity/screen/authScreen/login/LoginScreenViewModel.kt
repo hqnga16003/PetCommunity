@@ -25,8 +25,8 @@ interface LoginScreenState {
 }
 
 private class MutableLoginScreenUiState : LoginScreenState {
-    override var email: String by mutableStateOf("hqnga1604@gmail.com")
-    override var password: String by mutableStateOf("123456")
+    override var email: String by mutableStateOf("")
+    override var password: String by mutableStateOf("")
 }
 
 

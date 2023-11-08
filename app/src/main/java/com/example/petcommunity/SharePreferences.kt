@@ -12,5 +12,29 @@ class SharePreferences {
             )
             return sharedPref.getString("uid","").toString()
         }
+
+        fun firstWelcome(context: Context){
+            val sharedPref = context.getSharedPreferences(
+                "welcome",
+                Context.MODE_PRIVATE
+            )
+            val editor = sharedPref.edit()
+            editor.apply {
+                putBoolean("welcome", true)
+                apply()
+            }
+
+
+        }
+
+        fun checkWelcome(context: Context) : Boolean {
+            val sharedPref = context.getSharedPreferences(
+                "welcome",
+                Context.MODE_PRIVATE
+            )
+            return sharedPref.getBoolean("welcome",false)
+        }
     }
+
+
 }

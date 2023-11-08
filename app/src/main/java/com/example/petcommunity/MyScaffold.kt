@@ -1,25 +1,17 @@
 package com.example.petcommunity
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Button
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
-import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,7 +26,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 
@@ -97,11 +88,11 @@ fun BottomBarScaffold(navHostController: NavHostController) {
                             contentDescription = ""
                         )
                     })
-                BottomNavigationItem(selected = currentRoute == BottomBarScreen.Profile.route,
-                    onClick = { navHostController.navigate(BottomBarScreen.Profile.route) },
+                BottomNavigationItem(selected = currentRoute == BottomBarScreen.Shopping.route,
+                    onClick = { navHostController.navigate(BottomBarScreen.Shopping.route) },
                     icon = {
                         Icon(
-                            BottomBarScreen.Profile.icon,
+                            BottomBarScreen.Shopping.icon,
                             contentDescription = ""
                         )
                     })
@@ -117,11 +108,11 @@ fun BottomBarScaffold(navHostController: NavHostController) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
 
-                BottomNavigationItem(selected = currentRoute == BottomBarScreen.Favorite.route,
-                    onClick = { navHostController.navigate(BottomBarScreen.Favorite.route) },
+                BottomNavigationItem(selected = currentRoute == BottomBarScreen.Profile.route,
+                    onClick = { navHostController.navigate(BottomBarScreen.Profile.route) },
                     icon = {
                         Icon(
-                            BottomBarScreen.Favorite.icon,
+                            BottomBarScreen.Profile.icon,
                             contentDescription = ""
                         )
                     })

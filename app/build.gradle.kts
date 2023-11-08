@@ -65,6 +65,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.appcompat:appcompat:1.6.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -109,6 +110,16 @@ dependencies {
     implementation("com.squareup.moshi:moshi-kotlin:1.14.0")
 
     implementation ("com.google.code.gson:gson:2.10.1")
+
+    implementation ("com.google.android.material:material:1.5.0")
+
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    val billing_version = "6.0.1"
+
+    implementation("com.android.billingclient:billing:$billing_version")
+    implementation("com.android.billingclient:billing-ktx:$billing_version")
+    implementation("com.google.guava:guava:32.1.3-jre")
+    implementation("com.google.guava:guava:32.1.3-android")
 
 
 }

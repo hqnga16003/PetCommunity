@@ -16,7 +16,7 @@ interface ForgotPasswordScreenState {
     var email: String
 }
 private class MutableForgotPasswordScreenState : ForgotPasswordScreenState {
-    override var email: String by mutableStateOf("hqnga1604@gmail.com")
+    override var email: String by mutableStateOf("")
 
 }
 

@@ -15,18 +15,21 @@ import java.util.Date
 
 @Parcelize
 data class Pet(
-    val name: String? = null,//
-    val age: String? = null,//
-    val gender: String? = null,//
+    var id:String? = null,
+    val name: String? = null,
+    val age: String? = null,
+    val gender: String? = null,
     val color: String? = null,
     val weight: String? = null,
-    val location: String? = null,//
-    var image: String? = null,//
-    val content: String? = null,//
-    val phoneNumber: String? = null,//
-    val uId: String? = null,
+    val location: String? = null,
+    var image: String? = null,
+    val content: String? = null,
+    val phoneNumber: String? = null,
+    val uid: String? = null,//
     val createAt: String? = null,
-    val check: Boolean? = null
+    val check: Boolean? = null,
+    val userCheck:Boolean? = null,
+    val favorite: String? = null
 
 ) : Parcelable {
     companion object {

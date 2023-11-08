@@ -34,7 +34,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.petcommunity.R
-import com.example.petcommunity.ui.theme.GreenText
 
 
 @Composable
@@ -68,7 +67,7 @@ fun TextAuth(titleFirst:String, titleSecond:String, onClick: () -> Unit) {
         )
         Text(
             text = titleSecond,
-            style = MaterialTheme.typography.titleSmall.copy(color = GreenText),
+            style = MaterialTheme.typography.titleSmall.copy(color = Color.Green),
             modifier = Modifier.clickable(onClick = onClick)
         )
 
@@ -82,7 +81,7 @@ fun ButtonAuth(title: String,enabled:Boolean, onClick: () -> Unit) {
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            containerColor = GreenText,
+            containerColor =  Color.Green,
             contentColor = Color.White
         ),
         enabled = enabled

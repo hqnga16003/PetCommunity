@@ -24,9 +24,9 @@ interface SignUpFormState {
 }
 
 class MutableSignUpFormState() : SignUpFormState {
-    override var email: String by mutableStateOf("hqng1604@gmail.com")
-    override var password: String by mutableStateOf("123456")
-    override var conformPassword: String by mutableStateOf("123456")
+    override var email: String by mutableStateOf("")
+    override var password: String by mutableStateOf("")
+    override var conformPassword: String by mutableStateOf("")
     override var emailValidation: Boolean by mutableStateOf(false)
     override var passwordValidation: Boolean by mutableStateOf(false)
     override var conformPasswordValidation: Boolean by mutableStateOf(false)

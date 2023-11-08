@@ -26,9 +26,8 @@ import com.example.petcommunity.model.PetBookNavigation
 import com.google.gson.Gson
 
 @Composable
-fun HomeScreen(navHostController: NavHostController) {
-    val viewModel: HomeViewModel = hiltViewModel()
-    val listPet = viewModel.listPet.collectAsState()
+fun HomeScreen(navHostController: NavHostController,homeViewModel: HomeViewModel) {
+    val listPet = homeViewModel.listPet.collectAsState()
     Scaffold(floatingActionButton = {
         FloatingActionButtonScaffold(navHostController)
     },
@@ -41,14 +40,13 @@ fun HomeScreen(navHostController: NavHostController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(Color(0xFFF5F5E8))
         ) {
             item {
                 TopBar()
                 Spacer(modifier = Modifier.height(8.dp))
 
             }
-            items(listPet.value.filter { it.check == true }) { it ->
+            items(listPet.value.filter { it.check == true && it.userCheck == true }) { it ->
                 ItemDogCard(dog = it) {
                     navHostController.navigate(PetBookNavigation.createRoute(it))
 

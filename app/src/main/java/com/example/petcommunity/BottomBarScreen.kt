@@ -4,7 +4,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class BottomBarScreen(
@@ -17,10 +19,10 @@ sealed class BottomBarScreen(
         title = "HOME",
         icon = Icons.Default.Home
     )
-    object Favorite : BottomBarScreen(
-        route = "FAVORITE",
-        title = "FAVORITE",
-        icon = Icons.Default.Favorite
+    object Shopping : BottomBarScreen(
+        route = "SHOPPING",
+        title = "SHOPPING",
+        icon = Icons.Default.Search
     )
 
     object Profile : BottomBarScreen(

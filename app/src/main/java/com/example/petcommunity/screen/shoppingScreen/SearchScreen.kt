@@ -1,87 +1,111 @@
-package com.example.petcommunity.screen.shoppingScreen
-
-import android.util.Log
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.FabPosition
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
+import coil.compose.AsyncImage
 import com.example.petcommunity.BottomBarScaffold
 import com.example.petcommunity.FloatingActionButtonScaffold
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalGlideComposeApi::class)
 @Composable
-fun ShoppingScreen(navHostController: NavHostController) {
-
-    val listPost = listOf(
-        "https://bizweb.dktcdn.net/100/092/840/themes/885495/assets/slider_1.jpg?1686585534643",
-        "https://bizweb.dktcdn.net/100/092/840/themes/885495/assets/slider_2.jpg?1686585534643",
-        "https://bizweb.dktcdn.net/100/092/840/themes/885495/assets/slider_3.jpg?1686585534643"
+fun SearchScreen(navHostController: NavHostController) {
+    val listAddress = listOf<Address>(
+        Address(
+            "Hồ Chí Minh",
+            "https://hnm.1cdn.vn/2023/01/06/hanoimoi.com.vn-uploads-images-lequyen-2023-01-_1-3-.jpg"
+        ),
+        Address(
+            "Đà Nẵng",
+            "https://hodadi.s3.amazonaws.com/production/blogs/pictures/000/000/028/original/du-lich-da-nang.jpg?1501897690"
+        ),
+        Address(
+            "Hà Nội",
+            "https://owa.bestprice.vn/images/destinations/uploads/trung-tam-thanh-pho-ha-noi-603da1f235b38.jpg"
+        ),
+        Address(
+            "Cần thơ",
+            "https://media.vneconomy.vn/images/upload/2023/07/14/anh-thanh-pho-2.jpg"
+        )
     )
-    val height = LocalConfiguration.current.screenHeightDp
-    val heightImg = height * 0.2
-    Scaffold(floatingActionButton = {
-        FloatingActionButtonScaffold(navHostController)
-    },
+    androidx.compose.material.Scaffold(
+        floatingActionButton = { FloatingActionButtonScaffold(navHostController) },
         floatingActionButtonPosition = FabPosition.Center,
         isFloatingActionButtonDocked = true,
         bottomBar = {
             BottomBarScaffold(navHostController)
-        }) { paddingValues ->
-        LazyColumn(modifier = Modifier.padding(paddingValues)) {
-            item {
-                val pagerState = rememberPagerState(pageCount = {
-                    listPost.size
-                })
-                GlideImage(
-                    model = "https://bizweb.dktcdn.net/100/092/840/themes/885495/assets/slider_3.jpg?1686585534643",
-                    contentDescription = "",
-                    modifier = Modifier.fillMaxWidth(),
-                    contentScale = ContentScale.Fit
-                )
-//                HorizontalPager(state = pagerState, modifier = Modifier.fillMaxWidth()) { page ->
-//                    Poster(uri = listPost[page], modifier = Modifier.fillMaxWidth().height(heightImg.dp))
-//                }
-
+        }
+    ) { paddingValues ->
+        LazyVerticalGrid(
+            modifier = Modifier.padding(paddingValues),
+            columns = GridCells.Fixed(2),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp)
+        ) {
+            items(listAddress){
+                it-> ItemAddressView(it){
+                    navHostController.navigate("search/"+it.title)
+                }
             }
         }
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
+
+data class Address(val title: String, val img: String)
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Poster(uri: String, modifier: Modifier = Modifier) {
-    GlideImage(
-        model = uri,
-        contentDescription = "",
-        modifier = modifier,
-        contentScale = ContentScale.Fit
-    )
+fun ItemAddressView(address: Address, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .height(90.dp)
+            .width(120.dp),
+        shape = RoundedCornerShape(15.dp),
+        elevation = CardDefaults.cardElevation(5.dp),
+        onClick = onClick
+
+    ) {
+        Box() {
+            AsyncImage(
+                modifier = Modifier.fillMaxSize(),
+                model = address.img,
+                contentDescription = "",
+                contentScale = ContentScale.Crop
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(12.dp),
+                contentAlignment = Alignment.BottomStart
+            ) {
+                Text(
+                    text = address.title,
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
 }

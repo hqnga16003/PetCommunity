@@ -2,7 +2,8 @@ package com.example.petcommunity.screen.detailsScreen
 
 
 import android.annotation.SuppressLint
-import android.util.Log
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,18 +31,25 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -49,53 +57,56 @@ import com.example.petcommunity.R
 import com.example.petcommunity.component.GenderTag
 import com.example.petcommunity.data.FakeDogDatabase.owner
 import com.example.petcommunity.model.Pet
+import com.example.petcommunity.screen.homeScreen.HomeViewModel
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun Details(navController: NavController, dog: Pet) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Details") },
-                backgroundColor = MaterialTheme.colors.background,
-                contentColor = colorResource(id = R.color.text),
-                navigationIcon = {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(24.dp, 24.dp)
-                            .clickable {
-                                navController.navigateUp()
-                            },
-                        tint = colorResource(id = R.color.text)
-                    )
-                }
-            )
-        },
+fun Details(navController: NavController, dog: Pet, homeViewModel: HomeViewModel) {
+
+    Scaffold(topBar = {
+        TopAppBar(title = { Text("Details") },
+            backgroundColor = MaterialTheme.colors.background,
+            contentColor = colorResource(id = R.color.text),
+            navigationIcon = {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(24.dp, 24.dp)
+                        .clickable {
+                            navController.navigateUp()
+                        },
+                    tint = colorResource(id = R.color.text)
+                )
+            })
+    },
 
         content = {
             DetailsView(dog)
-        }
-    )
+        })
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun DetailsView(dog:Pet) {
+fun DetailsView(dog: Pet) {
+    val context = LocalContext.current
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color.White)
+            .background(color = colorResource(id = R.color.background))
     ) {
+
         item {
             dog.apply {
+
                 GlideImage(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(346.dp),
-                    model = dog.image!!.replace("7KboMvBuYFfsa7zVp1jDl8LQ8y22/", "7KboMvBuYFfsa7zVp1jDl8LQ8y22%2F"),
+                    model = dog.image!!.replace(
+                        "7KboMvBuYFfsa7zVp1jDl8LQ8y22/", "7KboMvBuYFfsa7zVp1jDl8LQ8y22%2F"
+                    ),
                     alignment = Alignment.CenterStart,
                     contentDescription = "",
                     contentScale = ContentScale.Crop
@@ -153,23 +164,27 @@ fun DetailsView(dog:Pet) {
                 Title(title = "Owner info")
                 Spacer(modifier = Modifier.height(16.dp))
                 owner.apply {
-                    OwnerCard(name, bio, image)
+                    OwnerCard(name)
                 }
             }
         }
 
-        // CTA - Adopt me button
         item {
             Spacer(modifier = Modifier.height(36.dp))
             Button(
-                onClick = { /* Do something! */ },
+                onClick = {
+                    val intent = Intent(Intent.ACTION_DIAL).apply {
+                        data = Uri.parse("tel:${dog.phoneNumber}")
+                    }
+                    startActivity(context, intent, null)
+
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp)
                     .padding(16.dp, 0.dp, 16.dp, 0.dp),
                 colors = ButtonDefaults.textButtonColors(
-                    backgroundColor = colorResource(id = R.color.blue),
-                    contentColor = Color.White
+                    backgroundColor = colorResource(id = R.color.blue), contentColor = Color.White
                 )
             ) {
                 Text("Adopt me")
@@ -186,17 +201,18 @@ fun Title(title: String) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp, 0.dp, 0.dp, 0.dp),
+        color = colorResource(id = R.color.text),
         style = MaterialTheme.typography.subtitle1,
         fontWeight = FontWeight.W600,
-        textAlign = TextAlign.Start,
-        color = Color.Black
+        textAlign = TextAlign.Start
     )
 }
 
 
-
 @Composable
-fun DogInfoCard(pet:Pet) {
+fun DogInfoCard(dog: Pet) {
+    var checked by remember { mutableStateOf(false) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -205,8 +221,9 @@ fun DogInfoCard(pet:Pet) {
 
         Column(modifier = Modifier.align(Alignment.CenterVertically)) {
             Text(
-                text = pet.name.toString(),
+                text = dog.name.toString(),
                 modifier = Modifier.padding(0.dp, 0.dp, 12.dp, 0.dp),
+                color = MaterialTheme.colors.surface,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.h5
             )
@@ -224,27 +241,39 @@ fun DogInfoCard(pet:Pet) {
                 )
 
                 Text(
-                    text = pet.location.toString(),
+                    text = dog.location.toString(),
                     modifier = Modifier.padding(8.dp, 12.dp, 12.dp, 0.dp),
+                    color = MaterialTheme.colors.surface,
                     style = MaterialTheme.typography.caption
                 )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-
             Text(
-                text = pet.createAt.toString(),
+                text = "12 mins ago",
                 modifier = Modifier.padding(0.dp, 0.dp, 12.dp, 0.dp),
+                color = MaterialTheme.colors.surface,
                 style = MaterialTheme.typography.overline
             )
         }
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-            GenderTag(pet.gender.toString())
+        Column(horizontalAlignment = Alignment.End) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                GenderTag(dog.gender.toString())
+            }
+            Spacer(modifier = Modifier.height(5.dp))
+
+            Icon(Icons.Default.Favorite,
+                tint = if (checked) Color.Red else Color.Black,
+                contentDescription = "",
+                modifier = Modifier
+                    .size(25.dp)
+                    .clickable {
+                        checked = !checked
+                    })
         }
     }
 }
-
 
 
 @Composable
@@ -258,8 +287,7 @@ fun InfoCard(title: String, value: String) {
         contentAlignment = Alignment.Center
     ) {
         Column(
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.wrapContentWidth()
+            verticalArrangement = Arrangement.Center, modifier = Modifier.wrapContentWidth()
         ) {
             Text(
                 text = value,
@@ -283,23 +311,19 @@ fun InfoCard(title: String, value: String) {
     }
 }
 
-
-
 @Composable
-fun OwnerCard(name: String, bio: String, image: Int) {
+fun OwnerCard(name: String) {
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-        val personImage: Painter = painterResource(id = image)
-
         Image(
             modifier = Modifier
                 .size(60.dp, 60.dp)
                 .clip(RoundedCornerShape(16.dp)),
-            painter = personImage,
+            painter = painterResource(id = R.drawable.avtar_user),
             alignment = Alignment.CenterStart,
             contentDescription = "",
             contentScale = ContentScale.Crop
@@ -317,11 +341,7 @@ fun OwnerCard(name: String, bio: String, image: Int) {
             )
 
             Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = bio,
-                color = colorResource(id = R.color.text),
-                style = MaterialTheme.typography.caption
-            )
+
         }
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
@@ -330,10 +350,9 @@ fun OwnerCard(name: String, bio: String, image: Int) {
                 onClick = { /*TODO*/ },
                 backgroundColor = colorResource(id = R.color.blue)
             ) {
-                val owner: Painter = painterResource(id = R.drawable.ic_messanger)
                 Icon(
                     modifier = Modifier.size(20.dp),
-                    painter = owner,
+                    painter = painterResource(id = R.drawable.ic_messanger),
                     contentDescription = "",
                     tint = Color.White
                 )
@@ -341,5 +360,4 @@ fun OwnerCard(name: String, bio: String, image: Int) {
         }
     }
 }
-
 
